@@ -6,12 +6,12 @@ module DeviseSecurityExtension
       included do
         before_filter :handle_password_change
       end
-      
+
       module ClassMethods
         # helper for captcha
         def init_recover_password_captcha
           include RecoverPasswordCaptcha
-        end        
+        end
       end
 
       module RecoverPasswordCaptcha
@@ -29,7 +29,7 @@ module DeviseSecurityExtension
           if not devise_controller? and not ignore_password_expire? and not request.format.nil? and request.format.html?
             Devise.mappings.keys.flatten.any? do |scope|
               if signed_in?(scope) and warden.session(scope)['password_expired']
-                session["#{scope}_return_to"] = request.path if request.get?
+                session["#{scope}_return_to"] = request.fullpath if request.get?
                 redirect_for_password_change scope
                 return
               end
@@ -48,9 +48,9 @@ module DeviseSecurityExtension
           change_path = "#{scope}_password_expired_path"
           send(change_path)
         end
-        
+
         protected
-        
+
         # allow to overwrite for some special handlings
         def ignore_password_expire?
           false
